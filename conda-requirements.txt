@@ -1,0 +1,6 @@
+shapely
+sqlalchemy
+sqlite
+numpy
+pandas
+bokeh
