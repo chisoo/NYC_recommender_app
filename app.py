@@ -11,7 +11,14 @@ def index():
 	if request.method == 'GET':
   		return render_template('index.html')
 	else: 
-		return render_template('picked_chars.html')
+		char_chosen_list = []
+		for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
+				'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'noise_res', 
+				'assault', 'drug', 'harrassment', 'rape_sex_crime', 'robbery', 
+				'theft', 'weapon', 'healthy_trees']:
+			if request.form.get(char): 
+				char_chosen_list.append(request.form.get(char))
+		return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
   		
 if __name__ == '__main__':
   app.run(port=33507)

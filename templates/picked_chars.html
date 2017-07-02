@@ -10,6 +10,9 @@
 	<body>
 		<div class=page>
 			<h1>You have picked the following characteristics</h1>
+			{% for char in char_chosen_list %}
+				{{char}}<br />
+			{% endfor %}
 		</div>
 	</body>
 </html>
