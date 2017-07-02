@@ -3,13 +3,43 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Capstone Project</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<style> 
+		html {
+			font-family: 'Helvetica';
+			background: white;
+		}
+
+		body { 
+			background: lightgrey;
+			max-width: 1200px;
+			margin: 0 auto; 
+			padding: 5px 10px 5px 10px;
+		}
+
+		#header {
+			padding: 2px 10px 2px 10px;
+			background: lightsteelblue;
+		}
+
+		input[type = "submit"] {
+			padding: 0px 10px 0px 10px;
+			color: black;
+			background: lightsteelblue;
+			border: none;
+			box-shadow: 1px 1px 1px #4C6E91;
+		}
+		
+		input[type = "submit"]:hover {
+			background: steelblue;
+		}
+		</style>
 	</head>
+
 	<body>
 		<div class=page>
-  			<h1>NYC Neighborhood Block Recommender </h1>
+			<div id = 'header'>
+	  			<h1>NYC Neighborhood Block Recommender </h1>
+	  		</div>
 			<div class=metanav>
 
 				<h4>Please choose the characteristics you care about from the following: </h4>

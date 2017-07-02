@@ -3,13 +3,35 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Capstone Project - Picked Characteristics</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<style> 
+
+			html {
+				font-family: 'Helvetica';
+				background: white;
+			}
+
+			body { 
+				background: lightgrey;
+				max-width: 1200px;
+				margin: 0 auto; 
+				padding: 5px 10px 5px 10px;
+			}
+
+			#header {
+				padding: 2px 10px 2px 10px;
+				background: lightsteelblue;
+			}
+		</style>
+
 	</head>
+
 	<body>
 		<div class=page>
-			<h1>You have picked the following characteristics</h1>
+			<div id = 'header'>
+	  			<h1>NYC Neighborhood Block Recommender </h1>
+	  		</div>
+
+			<h4>You have picked the following characteristics</h1>
 			{% for char in char_chosen_list %}
 				{{char}}<br />
 			{% endfor %}
