@@ -15,9 +15,10 @@ graph_path = "../Graphs/From App/"
 ### first, write helper functions
 def take_feature_input():
     # take the features
-    possible_feature_list = ['med_hhld_inc', 'white_only_pct', 'black_only_pct', \
-                'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'same_house_pct', 'med_gross_rent', \
-                'Noise - Residential', 'assault', 'drug', 'harrassment', 'larceny', 'murder/manslaughter/homicide', \
+    possible_feature_list = ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
+                'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'same_house_pct', 
+                'med_gross_rent', 'Noise - Residential', 'assault', 'drug', 
+                'harrassment', 'larceny', 'murder/manslaughter/homicide', 
                 'rape/sex crime', 'robbery', 'theft', 'weapon', 'good trees']
     feature_list = []
 

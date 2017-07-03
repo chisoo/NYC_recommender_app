@@ -17,7 +17,7 @@
 				padding: 5px 10px 5px 10px;
 			}
 
-			#header {
+			.header {
 				padding: 2px 10px 2px 10px;
 				background: lightsteelblue;
 			}
@@ -26,15 +26,20 @@
 	</head>
 
 	<body>
-		<div class=page>
-			<div id = 'header'>
+		<div class = page>
+			<div class = header>
 	  			<h1>NYC Neighborhood Block Recommender </h1>
 	  		</div>
 
-			<h4>You have picked the following characteristics</h1>
-			{% for char in char_chosen_list %}
-				{{char}}<br />
-			{% endfor %}
+	  		<div class = contents> 
+				<h4>You have picked the following characteristics</h4>
+				<form action = '/picked_vals' method = 'POST'>
+					{% for char in char_chosen_list %}
+						<p> {{char}} <input type = 'number' name = '{{char}}'> <br /> </p>
+					{% endfor %}
+					<input type = 'submit' value = 'Submit'>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>
