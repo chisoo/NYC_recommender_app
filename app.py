@@ -27,7 +27,7 @@ def main():
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
 	if request.method == 'GET':
-  		return render_template('index.html')
+		return render_template('index.html')
 	else: 
 		char_chosen_list = []
 		for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
@@ -144,7 +144,7 @@ def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
 
 	def polygon_to_patches(geo_df):
 		for i, row in geo_df.iterrows():
-	        m_polygon = row['geometry']
+			m_polygon = row['geometry']
 			poly = []
 			if m_polygon.geom_type == 'MultiPolygon':
 				for m_poly in m_polygon: 
