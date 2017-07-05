@@ -42,7 +42,9 @@ def index():
 def picked_vals():
 	if request.method == 'POST':
 		picked_vals_results = request.form
-		return render_template("picked_vals.html", picked_vals_results = picked_vals_results)
+		return render_template("picked_vals.html", 
+								picked_vals_results = picked_vals_results, 
+								cluster_block_groups = cluster_block_groups)
 
 def cluster_block_groups(num_clusters, feature_list, val_list):
 	"""
