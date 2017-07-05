@@ -21,32 +21,35 @@ app = Flask(__name__)
 data_path = '../Data/'
 
 @app.route('/')
-def main():
-	return redirect('/index')
-
-@app.route('/index', methods = ['GET', 'POST'])
 def index():
 	if request.method == 'GET':
 		return render_template('index.html')
-	else: 
-		char_chosen_list = []
-		for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
-				'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'noise_res', 
-				'assault', 'drug', 'harrassment', 'rape_sex_crime', 'robbery', 
-				'theft', 'weapon', 'healthy_trees']:
-			if request.form.get(char): 
-				char_chosen_list.append(request.form.get(char))
-		return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
 
-@app.route('/picked_vals', methods = ['POST', 'GET'])
+@app.route('/index', methods = ['POST'])
+def picked_char():
+	char_chosen_list = []
+	for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
+			'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'noise_res', 
+			'assault', 'drug', 'harrassment', 'rape_sex_crime', 'robbery', 
+			'theft', 'weapon', 'healthy_trees']:
+		if request.form.get(char): 
+			char_chosen_list.append(request.form.get(char))
+	return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
+
+@app.route('/picked_vals', methods = ['POST'])
 def picked_vals():
-	if request.method == 'POST':
-		picked_vals_results = request.form
-		return render_template("picked_vals.html", 
-								picked_vals_results = picked_vals_results, 
-								cluster_block_groups = cluster_block_groups)
+	picked_vals_results = request.form
+	return render_template("picked_vals.html", picked_vals_results = picked_vals_results)
 
-def cluster_block_groups(num_clusters, feature_list, val_list):
+@app.route('/cluster')
+def cluster():
+	return render_template("cluster.html")
+
+def cluster_block_groups():
+	num_clusters = 20
+	picked_vals_results = request.form
+	feature_list = [k for k, v in picked_vals_results.items()]
+	val_list = [v for k, v in picked_vals_results.items()]
 	"""
 	Parameters
 	----------
@@ -97,7 +100,7 @@ def cluster_block_groups(num_clusters, feature_list, val_list):
 	bk_gp_df_clustered_w_geo = GeoDataFrame(bk_gp_df_clustered_w_geo, geometry = bk_gp_df_clustered_w_geo['geometry'])
 
 	# return the data
-	return bk_gp_df_clustered_w_geo, cluster_val
+	return render_template("cluster.html")
 
 ### first, write helper functions
 def take_feature_input():

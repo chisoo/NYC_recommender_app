@@ -41,17 +41,8 @@
 	  			<h1>NYC Neighborhood Block Recommender </h1>
 	  		</div>	
 	  		<div class = contents> 
-	  			<h4>Here are the characteristics and values you chose: </h4>
-				<table> 
-					{% for key, value in picked_vals_results.items() %}
-						<tr>
-							<th> {{ key }} </th>
-							<td> {{ value }} </td>
-						</tr>
-					{% endfor %}
-				</table>
-				<input type = 'submit' value = 'Confirm'>
-				<li><a href="{{ url_for('cluster') }}">cluster page</a></li>
+	  			<h4>Cluster page </h4>
+	  			<img src = "/static/20 Clusters vs nynta inc15000 tree50.png" height = 480 width = 600>
 			</div>
 		</div>
 	</body>
