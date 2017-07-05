@@ -42,11 +42,17 @@
 	  		</div>	
 	  		<div class = contents> 
 	  			<h4>Cluster page </h4>
-	  			<p> median household income = $15,000, number of healthy trees = 250 </p>
+	  			<p> median household income = $15,000, number of healthy trees = 250 </p>	  			
 	  			<img src = "/static/20 Clusters vs nynta inc15000 tree250.png" height = 480 width = 600>
-				<li><a href="{{ url_for('cluster') }}">cluster page: income = $15,000 and number of healthy trees = 50</a></li>
-				<li><a href="{{ url_for('ccluster') }}">cluster page: income = $100,000 and number of healthy trees = 50</a></li>
-				<li><a href="{{ url_for('cclusterr') }}">cluster page: income = $100,000 and number of healthy trees = 250</a></li>
+
+	  			<p><center>
+				<a href="{{ url_for('cluster') }}">
+					<button>previous</button>
+				</a>	  			
+				<a href="{{ url_for('ccluster') }}">
+					<button>next</button>
+				</a>	  			
+				</center></p>
 			</div>
 		</div>
 	</body>
