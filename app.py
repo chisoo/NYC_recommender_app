@@ -37,7 +37,7 @@ def index():
 			if request.form.get(char): 
 				char_chosen_list.append(request.form.get(char))
 		return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
-  		
+
 @app.route('/picked_vals', methods = ['POST', 'GET'])
 def picked_vals():
 	if request.method == 'POST':
@@ -55,7 +55,7 @@ def cluster_block_groups(num_clusters, feature_list, val_list):
 	# read in data
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj:
 		bk_gp_df = pickle.load(file_obj)
-        
+
 	### prepare data for clustering
 	bk_gp_df.set_index('GEOID', inplace = True)
 	bk_gp_df.head(3)
@@ -117,7 +117,7 @@ def take_feature_input():
 	while ans != "":
 		feature_list.append(ans)
 		ans = input()
-        
+
 	print("features to be included:", feature_list)
 	print("Please provide the values you prefer for each feature:")
 	val_list = []
@@ -148,7 +148,7 @@ def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
 			poly = []
 			if m_polygon.geom_type == 'MultiPolygon':
 				for m_poly in m_polygon: 
-	 				poly.append(PolygonPatch(m_poly))
+					poly.append(PolygonPatch(m_poly))
 			else: 
 				poly.append(PolygonPatch(m_polygon))
 			geo_df.set_value(i, 'mpl_polygon', poly)
@@ -166,7 +166,7 @@ def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
 		ax.add_collection(p)
 	ax.autoscale_view()
 
-    # draw clusters
+	# draw clusters
 	for i, row in geo_df_val.iterrows():
 		p = PatchCollection(row['mpl_polygon'], facecolors = 'blue', edgecolors = 'None')
 		ax.add_collection(p)
