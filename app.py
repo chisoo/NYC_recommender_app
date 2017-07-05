@@ -45,6 +45,18 @@ def picked_vals():
 def cluster():
 	return render_template("cluster.html")
 
+@app.route('/clusterr')
+def clusterr():
+	return render_template("clusterr.html")
+
+@app.route('/ccluster')
+def ccluster():
+	return render_template("ccluster.html")
+
+@app.route('/cclusterr')
+def cclusterr():
+	return render_template("cclusterr.html")
+
 def cluster_block_groups():
 	num_clusters = 20
 	picked_vals_results = request.form
@@ -183,4 +195,4 @@ def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
 	plt.show()
 
 if __name__ == '__main__':
-	app.run(port=33507)
+	app.run(port=5000)
