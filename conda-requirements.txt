@@ -4,3 +4,4 @@ sqlite
 numpy
 pandas
 bokeh
+scikit-learn

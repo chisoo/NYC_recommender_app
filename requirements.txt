@@ -1,2 +1,5 @@
 Flask==0.12.2
 gunicorn==19.3.0
+pickle
+geopandas
+descartes
