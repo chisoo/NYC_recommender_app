@@ -10,11 +10,17 @@ from geopandas import GeoDataFrame
 import numpy as np
 import pandas as pd
 
-import matplotlib.pyplot as plt
-from descartes import PolygonPatch
-from matplotlib.patches import Polygon as mpl_Polygon
-from matplotlib.collections import PatchCollection
-import matplotlib
+# import matplotlib.pyplot as plt
+# from descartes import PolygonPatch
+# from matplotlib.patches import Polygon as mpl_Polygon
+# from matplotlib.collections import PatchCollection
+# import matplotlib
+
+from bokeh.io import show
+from bokeh.plotting import figure, save
+from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
+
+from bokeh_helper import setColumnDataSource
 
 app = Flask(__name__)
 
@@ -57,63 +63,6 @@ def ccluster():
 def cclusterr():
 	return render_template("cclusterr.html")
 
-def cluster_block_groups():
-	num_clusters = 20
-	picked_vals_results = request.form
-	feature_list = [k for k, v in picked_vals_results.items()]
-	val_list = [v for k, v in picked_vals_results.items()]
-	"""
-	Parameters
-	----------
-	num_clusters (int)
-	feature_list (list): list of variables to use in the clustering
-	val_list (list): list of values for each variables the user chose
-	"""
-	# read in data
-	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj:
-		bk_gp_df = pickle.load(file_obj)
-
-	### prepare data for clustering
-	bk_gp_df.set_index('GEOID', inplace = True)
-	bk_gp_df.head(3)
-
-	# pick only relevant variables
-	bk_gp_df_for_ml = bk_gp_df[feature_list].copy()
-
-	# fill in NA
-	bk_gp_df_for_ml = bk_gp_df_for_ml.fillna(0)
-
-	# scale the data
-	scaler = MinMaxScaler()
-	scaler.fit(bk_gp_df_for_ml)
-	bk_gp_df_for_ml_scaled = scaler.transform(bk_gp_df_for_ml)
-
-	### Clustering
-	kmeans = KMeans(n_clusters = num_clusters, random_state = 0)
-	clusters = kmeans.fit(bk_gp_df_for_ml_scaled)
-	bk_gp_df_for_ml['cluster'] = pd.Series(clusters.labels_, index = bk_gp_df_for_ml.index)
-
-	# check the 'distribution' of clusters
-	bk_gp_df_clustered = bk_gp_df_for_ml.copy()
-	bk_gp_df_clustered['cluster'].value_counts()
-
-	# predict using the values given
-	val_df = pd.DataFrame(val_list).T
-	val_transformed = scaler.transform(val_df)
-	cluster_val = kmeans.predict(val_transformed)
-
-	# prepare the data with GEOID
-	bk_gp_df_clustered.reset_index(inplace = True)
-	bk_gp_df.reset_index(inplace = True)
-
-	bk_gp_df_clustered_w_geo = bk_gp_df_clustered[['GEOID', 'cluster']].merge(bk_gp_df)
-
-	# make dataframe as geodataframe
-	bk_gp_df_clustered_w_geo = GeoDataFrame(bk_gp_df_clustered_w_geo, geometry = bk_gp_df_clustered_w_geo['geometry'])
-
-	# return the data
-	return render_template("cluster.html")
-
 ### first, write helper functions
 def take_feature_input():
 	# take the features
@@ -145,54 +94,35 @@ def take_feature_input():
 	return feature_list, val_list
 
 def load_boundary_df():
-	print('Please choose the boundary to use (boro/nynta).')
-	boundary_ans = input()
-	with open('{}{}_shape_df'.format(data_path, boundary_ans), 'rb') as file_obj: 
+	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
-	return boundary_ans, boundary_df
+	return boundary_df
 
 # using PatchCollections
 def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
-	boundary_ans, boundary_df = load_boundary_df()
+	boundary_df = load_boundary_df()
 
 	geo_df_val = geo_df[geo_df['cluster'] == int(cluster_val)].copy()
 
 	color_dict = {0: 'blue', 1: 'green', 2: 'yellow', 3: 'red', 4: 'pink'}
+	geo_df_val['color'] = gep_df_val['cluster'].apply(lambda x: color_dict[x])
 
-	def polygon_to_patches(geo_df):
-		for i, row in geo_df.iterrows():
-			m_polygon = row['geometry']
-			poly = []
-			if m_polygon.geom_type == 'MultiPolygon':
-				for m_poly in m_polygon: 
-					poly.append(PolygonPatch(m_poly))
-			else: 
-				poly.append(PolygonPatch(m_polygon))
-			geo_df.set_value(i, 'mpl_polygon', poly)
-		return geo_df
+	cluster_source = setColumnDataSource(geo_df_val, ['lon', 'lat', 'color'])
+	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
 
-	geo_df_val = polygon_to_patches(geo_df_val)
-	boundary_df = polygon_to_patches(boundary_df)
+	# initialize the figure
+	p = figure()
 
-	fig = plt.figure(figsize = (15, 12))
-	ax = fig.gca()
+	# plot the cluster and boundary
+	p.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
+	p.patches('lon', 'lat', fill_color = None, line_color = 'black', 
+				source = nynta_source, line_width = 1)
 
-	# draw boundary
-	for i, row in boundary_df.iterrows():
-		p = PatchCollection(row['mpl_polygon'], facecolors = 'None', edgecolors = 'k')
-		ax.add_collection(p)
-	ax.autoscale_view()
+	show(p)
 
-	# draw clusters
-	for i, row in geo_df_val.iterrows():
-		p = PatchCollection(row['mpl_polygon'], facecolors = 'blue', edgecolors = 'None')
-		ax.add_collection(p)
-	ax.autoscale_view()
-
-	plt.title('{} Clusters, {} as boundary:{}'.format(num_cluster, boundary_ans, feature_list))
-	plt.savefig('{}{} Clusters vs {}.png'.format(graph_path, num_cluster, boundary_ans));
-
-	plt.show()
-
+	# save the figure
+	output_file = r"{}/cluster_graph.html"
+	save(p, output_file)
+	
 if __name__ == '__main__':
 	app.run(port=5000)
