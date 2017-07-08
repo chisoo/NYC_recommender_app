@@ -47,6 +47,34 @@ def picked_vals():
 	picked_vals_results = request.form
 	return render_template("picked_vals.html", picked_vals_results = picked_vals_results)
 
+@app.route('')
+# using PatchCollections
+def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
+	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
+		boundary_df = pickle.load(file_obj)
+
+	geo_df_val = geo_df[geo_df['cluster'] == int(cluster_val)].copy()
+
+	color_dict = {0: 'blue', 1: 'green', 2: 'yellow', 3: 'red', 4: 'pink'}
+	geo_df_val['color'] = gep_df_val['cluster'].apply(lambda x: color_dict[x])
+
+	cluster_source = setColumnDataSource(geo_df_val, ['lon', 'lat', 'color'])
+	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
+
+	# initialize the figure
+	p = figure()
+
+	# plot the cluster and boundary
+	p.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
+	p.patches('lon', 'lat', fill_color = None, line_color = 'black', 
+				source = nynta_source, line_width = 1)
+
+	show(p)
+
+	# save the figure
+	output_file = r"{}/cluster_graph.html"
+	save(p, output_file)
+
 @app.route('/cluster')
 def cluster():
 	return render_template("cluster.html")
@@ -93,36 +121,6 @@ def take_feature_input():
 		val_list.append(val)
 	return feature_list, val_list
 
-def load_boundary_df():
-	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
-		boundary_df = pickle.load(file_obj)
-	return boundary_df
 
-# using PatchCollections
-def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
-	boundary_df = load_boundary_df()
-
-	geo_df_val = geo_df[geo_df['cluster'] == int(cluster_val)].copy()
-
-	color_dict = {0: 'blue', 1: 'green', 2: 'yellow', 3: 'red', 4: 'pink'}
-	geo_df_val['color'] = gep_df_val['cluster'].apply(lambda x: color_dict[x])
-
-	cluster_source = setColumnDataSource(geo_df_val, ['lon', 'lat', 'color'])
-	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
-
-	# initialize the figure
-	p = figure()
-
-	# plot the cluster and boundary
-	p.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
-	p.patches('lon', 'lat', fill_color = None, line_color = 'black', 
-				source = nynta_source, line_width = 1)
-
-	show(p)
-
-	# save the figure
-	output_file = r"{}/cluster_graph.html"
-	save(p, output_file)
-	
 if __name__ == '__main__':
 	app.run(port=5000)
