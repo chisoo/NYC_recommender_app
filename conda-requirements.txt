@@ -3,5 +3,5 @@ sqlalchemy
 sqlite
 numpy
 pandas
-bokeh
+bokeh=0.12.4
 scikit-learn
