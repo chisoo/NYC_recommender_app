@@ -4,4 +4,4 @@ sqlite
 numpy
 pandas
 bokeh=0.12.4
-scikit-learn
+sklearn
