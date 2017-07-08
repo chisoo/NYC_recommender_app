@@ -17,14 +17,15 @@ import pandas as pd
 # import matplotlib
 
 from bokeh.io import show
-from bokeh.plotting import figure, save
+from bokeh.plotting import figure, save, output_file
 from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
+from bokeh.embed import components
 
 from bokeh_helper import setColumnDataSource
 
 app = Flask(__name__)
 
-data_path = '../Data/'
+data_path = 'Data/'
 
 @app.route('/')
 def index():
@@ -47,33 +48,32 @@ def picked_vals():
 	picked_vals_results = request.form
 	return render_template("picked_vals.html", picked_vals_results = picked_vals_results)
 
-@app.route('')
+@app.route('/cluster_graph')
 # using PatchCollections
-def draw_PatchCollections(geo_df, num_cluster, feature_list, cluster_val):
+def cluster_graph():
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
 
-	geo_df_val = geo_df[geo_df['cluster'] == int(cluster_val)].copy()
+	with open('{}cluster5'.format(data_path), 'rb') as file_obj: 
+		cluster5 = pickle.load(file_obj)
 
 	color_dict = {0: 'blue', 1: 'green', 2: 'yellow', 3: 'red', 4: 'pink'}
-	geo_df_val['color'] = gep_df_val['cluster'].apply(lambda x: color_dict[x])
+	cluster5['color'] = cluster5['cluster'].apply(lambda x: color_dict[x])
 
-	cluster_source = setColumnDataSource(geo_df_val, ['lon', 'lat', 'color'])
+	cluster_source = setColumnDataSource(cluster5, ['lon', 'lat', 'color'])
 	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
 
 	# initialize the figure
-	p = figure()
+	cluster_plot = figure()
 
 	# plot the cluster and boundary
-	p.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
-	p.patches('lon', 'lat', fill_color = None, line_color = 'black', 
+	cluster_plot.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
+	cluster_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
 				source = nynta_source, line_width = 1)
 
-	show(p)
+	script, div = components(cluster_plot)
 
-	# save the figure
-	output_file = r"{}/cluster_graph.html"
-	save(p, output_file)
+	return render_template("cluster_graph.html", script = script, div = div)
 
 @app.route('/cluster')
 def cluster():
