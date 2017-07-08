@@ -33,7 +33,7 @@
 
 	  		<div class = contents> 
 				<h4>You have picked the following characteristics</h4>
-				<form action = '/picked_vals' method = 'POST'>
+				<form action = '/cluster_graph' method = 'POST'>
 					{% for char in char_chosen_list %}
 						<p> {{char}} <input type = 'number' name = '{{char}}'> <br /> </p>
 					{% endfor %}
