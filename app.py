@@ -57,19 +57,23 @@ def cluster_graph():
 	with open('{}cluster5'.format(data_path), 'rb') as file_obj: 
 		cluster5 = pickle.load(file_obj)
 
-	color_dict = {0: 'blue', 1: 'green', 2: 'yellow', 3: 'red', 4: 'pink'}
-	cluster5['color'] = cluster5['cluster'].apply(lambda x: color_dict[x])
+	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
 
-	cluster_source = setColumnDataSource(cluster5, ['lon', 'lat', 'color'])
-	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
+	cluster_source = setColumnDataSource(cluster_df, ['lon', 'lat'])
+	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat', 'NTAName'])
 
 	# initialize the figure
 	cluster_plot = figure()
 
 	# plot the cluster and boundary
-	cluster_plot.patches('lon', 'lat', fill_color = 'color', alpha = 0.5, source = cluster_source)
+	cluster_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, source = cluster_source)
 	cluster_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
 				source = nynta_source, line_width = 1)
+
+	# add hover tool
+	hover = HoverTool()
+	hover.tooltips = [("Neighborhood", "@NTAName")]
+	cluster_plot.add_tools(hover)
 
 	script, div = components(cluster_plot)
 
@@ -91,36 +95,62 @@ def ccluster():
 def cclusterr():
 	return render_template("cclusterr.html")
 
-### first, write helper functions
-def take_feature_input():
-	# take the features
-	possible_feature_list = ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
-				'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'same_house_pct', 
-				'med_gross_rent', 'Noise - Residential', 'assault', 'drug', 
-				'harrassment', 'larceny', 'murder/manslaughter/homicide', 
-				'rape/sex crime', 'robbery', 'theft', 'weapon', 'good trees']
-	feature_list = []
+def cluster_block_groups():
+    num_clusters = 20
+    picked_vals_results = request.form
+    feature_list = [k for k, v in picked_vals_results.items()]
+    val_list = [v for k, v in picked_vals_results.items()]
+    """
+    Parameters
+    ----------
+    num_clusters (int)
+    feature_list (list): list of variables to use in the clustering
+    val_list (list): list of values for each variables the user chose
+    """
+    # read in data
+    with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj:
+        bk_gp_df = pickle.load(file_obj)
 
-	print("Please enter the features you want to include. Please enter one at a time.")
-	print("Here is the list of possible features to use:")
-	for item in possible_feature_list:
-		print(item)
-	print("----------")
+    ### prepare data for clustering
+    bk_gp_df.set_index('GEOID', inplace = True)
+    bk_gp_df.head(3)
 
-	ans = input()
-	while ans != "":
-		feature_list.append(ans)
-		ans = input()
+    # pick only relevant variables
+    bk_gp_df_for_ml = bk_gp_df[feature_list].copy()
 
-	print("features to be included:", feature_list)
-	print("Please provide the values you prefer for each feature:")
-	val_list = []
-	for _, feature in enumerate(feature_list):
-		print(feature)
-		val = float(input())
-		val_list.append(val)
-	return feature_list, val_list
+    # fill in NA
+    bk_gp_df_for_ml = bk_gp_df_for_ml.fillna(0)
 
+    # scale the data
+    scaler = MinMaxScaler()
+    scaler.fit(bk_gp_df_for_ml)
+    bk_gp_df_for_ml_scaled = scaler.transform(bk_gp_df_for_ml)
+
+    ### Clustering
+    kmeans = KMeans(n_clusters = num_clusters, random_state = 0)
+    clusters = kmeans.fit(bk_gp_df_for_ml_scaled)
+    bk_gp_df_for_ml['cluster'] = pd.Series(clusters.labels_, index = bk_gp_df_for_ml.index)
+
+    # check the 'distribution' of clusters
+    bk_gp_df_clustered = bk_gp_df_for_ml.copy()
+    bk_gp_df_clustered['cluster'].value_counts()
+
+    # predict using the values given
+    val_df = pd.DataFrame(val_list).T
+    val_transformed = scaler.transform(val_df)
+    cluster_val = kmeans.predict(val_transformed)
+
+    # prepare the data with GEOID
+    bk_gp_df_clustered.reset_index(inplace = True)
+    bk_gp_df.reset_index(inplace = True)
+
+    bk_gp_df_clustered_w_geo = bk_gp_df_clustered[['GEOID', 'cluster']].merge(bk_gp_df)
+
+    # make dataframe as geodataframe
+    bk_gp_df_clustered_w_geo = GeoDataFrame(bk_gp_df_clustered_w_geo, geometry = bk_gp_df_clustered_w_geo['geometry'])
+
+    # return the data
+    return render_template("cluster_old.html")
 
 if __name__ == '__main__':
 	app.run(port=5000)

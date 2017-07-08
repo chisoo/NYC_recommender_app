@@ -4,9 +4,7 @@ from geopandas import GeoDataFrame
 import numpy as np
 import pandas as pd
 
-from bokeh.io import show
-from bokeh.plotting import figure, save
-from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
+from bokeh.models import ColumnDataSource
 
 def getLonLat(geom, coord_type):
     """Returns either longitudes and latitudes from geometry coordinate sequence. 
@@ -28,9 +26,11 @@ def multiPolygonHandler(multi_poly, coord_type):
     # Bokeh documentation regarding the Multi-geometry issues can be found here 
     (it is an open issue) 
     # https://github.com/bokeh/bokeh/issues/2321"""
-    coord_arrays = []
     for i, part in enumerate(multi_poly):
-        coord_arrays = np.append(coord_arrays, getPolyCoords(part, coord_type))
+        if i == 0:
+            coord_arrays = np.append(getPolyCoords(part, coord_type), np.nan)
+        else: 
+            coord_arrays = np.concatenate([coord_arrays, np.append(getPolyCoords(part, coord_type), np.nan)])
     # Return the coordinates
     return coord_arrays
 
@@ -50,7 +50,7 @@ def getCoords(row, geom_col, coord_type):
 def setColumnDataSource(df, col_list): 
     df['lon'] = df.apply(getCoords, geom_col = 'geometry', coord_type = 'lon', axis = 1)
     df['lat'] = df.apply(getCoords, geom_col = 'geometry', coord_type = 'lat', axis = 1)
-    
+        
     g_df = df[col_list].copy()
     g_source = ColumnDataSource(g_df)
     return g_source
