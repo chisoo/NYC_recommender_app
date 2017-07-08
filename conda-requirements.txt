@@ -3,5 +3,6 @@ sqlalchemy
 sqlite
 numpy
 pandas
-bokeh=0.12.4
-sklearn
+bokeh==0.12.4
+scikit-learn
+geopandas
