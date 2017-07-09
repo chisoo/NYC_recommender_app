@@ -79,9 +79,9 @@ def cluster_graph():
 
 	script, div = components(cluster_plot)
 
-	return render_template("cluster_graph.html", picked_vals_kv = picked_vals_kv, 
-							cluster_centers = cluster_centers, cluster_val = cluster_val, 
-							num_cluster = num_cluster, script = script, div = div) 
+	return render_template("cluster_graph.html", script = script, div = div, 
+							picked_vals_kv = picked_vals_kv, num_cluster = num_cluster, 
+							cluster_centers = cluster_centers, cluster_val = cluster_val)  
 
 @app.route('/cluster')
 def cluster():
@@ -98,7 +98,6 @@ def ccluster():
 @app.route('/cclusterr')
 def cclusterr():
 	return render_template("cclusterr.html")
-
 
 if __name__ == '__main__':
 	app.run(port=5000)
