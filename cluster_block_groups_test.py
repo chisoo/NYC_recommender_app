@@ -24,5 +24,6 @@ with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj:
 feature_list = ['med_hhld_inc', 'good trees']
 val_list = [15000, 50]
 
-cluster5, cluster_val = \
+cluster5, cluster_centers, cluster_val = \
     cluster_block_groups(bk_gp_df_for_graph, 5, feature_list, val_list)
+print(cluster_centers)

@@ -47,13 +47,17 @@ def cluster_graph():
 	# get the feature_list and val_list from user input
 	picked_vals_results = request.form
 	feature_list = [k for k, v in picked_vals_results.items()]
-	val_list = [float(v) for k, v in picked_vals_results.items()]
+	val_list = [int(v) for k, v in picked_vals_results.items()]
 
-	cluster5, cluster_val = \
-		cluster_block_groups(bk_gp_df_for_graph, 5, feature_list, val_list)
-
+	num_cluster = 5
+	cluster5, cluster_centers, cluster_val = \
+		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
+	cluster_centers = cluster_centers.astype(int).astype(str)
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
+	feature_list = np.append(['Group'], feature_list)
+	val_list = np.append(['Desired'], val_list)
+	picked_vals_kv = [feature_list, val_list]
 
 	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
 
@@ -75,8 +79,9 @@ def cluster_graph():
 
 	script, div = components(cluster_plot)
 
-	return render_template("cluster_graph.html", picked_vals_results = picked_vals_results, 
-							script = script, div = div) 
+	return render_template("cluster_graph.html", picked_vals_kv = picked_vals_kv, 
+							cluster_centers = cluster_centers, cluster_val = cluster_val, 
+							num_cluster = num_cluster, script = script, div = div) 
 
 @app.route('/cluster')
 def cluster():
