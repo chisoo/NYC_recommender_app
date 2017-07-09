@@ -65,6 +65,6 @@ def cluster_block_groups(bk_gp_df, num_clusters, feature_list, val_list):
 
     # make dataframe as geodataframe
     bk_gp_df_clustered_w_geo = GeoDataFrame(bk_gp_df_clustered_w_geo, geometry = bk_gp_df_clustered_w_geo['geometry'])
-
+    
     # return the data
     return bk_gp_df_clustered_w_geo, cluster_centers, cluster_val

@@ -32,8 +32,9 @@ def picked_char():
 	char_chosen_list = []
 	for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
 			'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'noise_res', 
-			'assault', 'drug', 'harrassment', 'rape_sex_crime', 'robbery', 
-			'theft', 'weapon', 'good trees']:
+			'murder/manslaughter/homicide', 'rape/sex crime', 'robbery', 
+			'assault', 'larceny', 'burglary', 'arson', 'theft', 'harrassment', 
+			'drug', 'weapon', 'good trees']:
 		if request.form.get(char): 
 			char_chosen_list.append(char)
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
@@ -52,29 +53,51 @@ def recommendations():
 	num_cluster = 5
 	cluster5, cluster_centers, cluster_val = \
 		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
+
+	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
 	cluster_centers = cluster_centers.astype(int).astype(str)
+
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
+
+	# setup the list for hover
+	hover_list = [("Neighborhood", "@NTAName")]
+	hover_dict = {'med_hhld_inc': 'median income', 
+				  'white_only_pct': 'white household', 
+				  'black_only_pct': 'black household', 
+				  'asian_only_pct': 'asian household', 
+				  'mixed_races_pct': 'mixed race household', 
+				  'hhld_size_all': 'household size',
+				  'noise_res': 'noise complaint (residential)', 
+				  'good trees': 'number of healthy trees'}
+	for item in feature_list:  
+		if item in hover_dict.keys():
+			hover_list.append((hover_dict[item], "@{"+item+"}"))
+		else: 
+			hover_list.append((item, "@{"+item+"}"))
+	print(hover_list)
+
+	# prepare column data source
+	cluster_df_vars = feature_list + ['lon', 'lat', 'NTAName']
+	cluster_source = setColumnDataSource(cluster_df, cluster_df_vars)
+	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
+
 	feature_list = np.append(['Group'], feature_list)
 	val_list = np.append(['Desired'], val_list)
 	picked_vals_kv = [feature_list, val_list]
-
-	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
-
-	cluster_source = setColumnDataSource(cluster_df, ['lon', 'lat'])
-	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat', 'NTAName'])
 
 	# initialize the figure
 	cluster_plot = figure()
 
 	# plot the cluster and boundary
-	cluster_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, source = cluster_source)
 	cluster_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
-				source = nynta_source, line_width = 1)
+				source = nynta_source, line_width = 1, name = 'nynta')
+	cluster_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, 
+				source = cluster_source, name = 'cluster')
 
 	# add hover tool
-	hover = HoverTool()
-	hover.tooltips = [("Neighborhood", "@NTAName")]
+	hover = HoverTool(names = ['cluster'])
+	hover.tooltips = hover_list
 	cluster_plot.add_tools(hover)
 
 	script, div = components(cluster_plot)
