@@ -38,8 +38,8 @@ def picked_char():
 			char_chosen_list.append(char)
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
 
-@app.route('/cluster_graph', methods = ['POST'])
-def cluster_graph():
+@app.route('/recommendations', methods = ['POST'])
+def recommendations():
 	# read in the dataframe prepared for the graph
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
 		bk_gp_df_for_graph = pickle.load(file_obj)
@@ -79,7 +79,7 @@ def cluster_graph():
 
 	script, div = components(cluster_plot)
 
-	return render_template("cluster_graph.html", script = script, div = div, 
+	return render_template("recommendations.html", script = script, div = div, 
 							picked_vals_kv = picked_vals_kv, num_cluster = num_cluster, 
 							cluster_centers = cluster_centers, cluster_val = cluster_val)  
 
