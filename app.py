@@ -56,6 +56,7 @@ def recommendations():
 
 	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
 	cluster_centers = cluster_centers.astype(int).astype(str)
+	relevent_NTAs = list(cluster_df['NTAName'].unique())
 
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
@@ -104,7 +105,8 @@ def recommendations():
 
 	return render_template("recommendations.html", script = script, div = div, 
 							picked_vals_kv = picked_vals_kv, num_cluster = num_cluster, 
-							cluster_centers = cluster_centers, cluster_val = cluster_val)  
+							cluster_centers = cluster_centers, cluster_val = cluster_val, 
+							relevent_NTAs = relevent_NTAs)  
 
 if __name__ == '__main__':
 	app.run(port=33507)
