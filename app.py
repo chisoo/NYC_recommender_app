@@ -22,6 +22,26 @@ app = Flask(__name__)
 
 data_path = 'Data/'
 
+app.var_dict = {'med_hhld_inc':'Median household income', 
+				'hhld_size_all': 'Household Size', 
+				'noise_res': 'Noise complaint (residential)', 
+				'murder/manslaughter/homicide': 'Murder/Manslaughter/Homicide', 
+				'rape/sex crime': 'Rape/Sex Crime', 
+				'robbery': 'Robbery', 
+				'assault': 'Assault', 
+				'larceny': 'Larceny', 
+				'burglary': 'Burglary', 
+				'arson': 'Arson', 
+				'theft': 'Theft', 
+				'harrassment': 'Harrassment', 
+				'drug': 'Drug', 
+				'weapon': 'Weapon', 
+				'good trees': 'Number of healthy trees', 
+				'med_gross_rent': 'Median gross rent', 
+				'med_num_rooms': 'Median number of rooms', 
+				'num_lines': 'Number of subway lines', 
+				'num_venues': 'Number of food venes'}
+
 @app.route('/')
 def index():
 	if request.method == 'GET':
@@ -30,33 +50,35 @@ def index():
 @app.route('/index', methods = ['POST'])
 def picked_char():
 	char_chosen_list = []
-	for char in ['med_hhld_inc', 'white_only_pct', 'black_only_pct', 
-			'asian_only_pct', 'mixed_races_pct', 'hhld_size_all', 'noise_res', 
+	for char in ['med_hhld_inc', 'hhld_size_all', 'noise_res', 
 			'murder/manslaughter/homicide', 'rape/sex crime', 'robbery', 
 			'assault', 'larceny', 'burglary', 'arson', 'theft', 'harrassment', 
-			'drug', 'weapon', 'good trees']:
+			'drug', 'weapon', 'good trees', 'med_gross_rent', 'med_num_rooms', 
+			'num_lines', 'num_food_venues']:
 		if request.form.get(char): 
 			char_chosen_list.append(char)
-	return render_template('picked_chars.html', char_chosen_list = char_chosen_list)
+	return render_template('picked_chars.html', char_chosen_list = char_chosen_list, 
+							var_dict = app.var_dict)
 
 @app.route('/recommendations', methods = ['POST'])
 def recommendations():
+	# get the feature_list and val_list from user input
+	picked_vals_results = request.form
+	print(picked_vals_results)
+	feature_list = [k for k, v in picked_vals_results.items()]
+	val_list = [int(v) for k, v in picked_vals_results.items()]
+
 	# read in the dataframe prepared for the graph
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
 		bk_gp_df_for_graph = pickle.load(file_obj)
 
-	# get the feature_list and val_list from user input
-	picked_vals_results = request.form
-	feature_list = [k for k, v in picked_vals_results.items()]
-	val_list = [int(v) for k, v in picked_vals_results.items()]
-
-	num_cluster = 5
+	num_cluster = 20
 	cluster5, cluster_centers, cluster_val = \
 		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
 
 	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
 	cluster_centers = cluster_centers.astype(int).astype(str)
-	relevent_NTAs = list(cluster_df['NTAName'].unique())
+	relevent_NTAs = list(cluster_df['NTAName'].unique()).sort()
 
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
@@ -64,13 +86,12 @@ def recommendations():
 	# setup the list for hover
 	hover_list = [("Neighborhood", "@NTAName")]
 	hover_dict = {'med_hhld_inc': 'median income', 
-				  'white_only_pct': 'white household', 
-				  'black_only_pct': 'black household', 
-				  'asian_only_pct': 'asian household', 
-				  'mixed_races_pct': 'mixed race household', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
-				  'good trees': 'number of healthy trees'}
+				  'good trees': 'number of healthy trees', 
+				  'num_lines': 'number of subway lines', 
+				  'num_venues': 'number of any venues', 
+				  'num_food_venues': 'number of food venues'}
 	for item in feature_list:  
 		if item in hover_dict.keys():
 			hover_list.append((hover_dict[item], "@{"+item+"}"))
