@@ -1,6 +1,6 @@
 gunicorn==19.3.0
 bokeh==0.12.4
-Flask==0.12.2
+Flask
 geopandas==0.2.1
 Jinja2==2.9.6
 numpy==1.12.1
