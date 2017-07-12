@@ -106,21 +106,5 @@ def recommendations():
 							picked_vals_kv = picked_vals_kv, num_cluster = num_cluster, 
 							cluster_centers = cluster_centers, cluster_val = cluster_val)  
 
-@app.route('/cluster')
-def cluster():
-	return render_template("cluster.html")
-
-@app.route('/clusterr')
-def clusterr():
-	return render_template("clusterr.html")
-
-@app.route('/ccluster')
-def ccluster():
-	return render_template("ccluster.html")
-
-@app.route('/cclusterr')
-def cclusterr():
-	return render_template("cclusterr.html")
-
 if __name__ == '__main__':
-	app.run(port=5000)
+	app.run(port=33507)
