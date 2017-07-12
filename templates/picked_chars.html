@@ -35,7 +35,8 @@
 				<h4>You have picked the following characteristics</h4>
 				<form action = '/recommendations' method = 'POST'>
 					{% for char in char_chosen_list %}
-						<p> {{char}} <input type = 'number' name = '{{char}}'> <br /> </p>
+						{%- set val = var_dict[char] %}
+						<p> {{val}} <input type = 'number' name = '{{char}}'> <br /> </p>
 					{% endfor %}
 					<input type = 'submit' value = 'Submit'>
 				</form>

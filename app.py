@@ -40,7 +40,7 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'med_gross_rent': 'Median gross rent', 
 				'med_num_rooms': 'Median number of rooms', 
 				'num_lines': 'Number of subway lines', 
-				'num_venues': 'Number of food venes'}
+				'num_venues': 'Number of food venues'}
 
 @app.route('/')
 def index():
