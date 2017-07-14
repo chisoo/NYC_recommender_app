@@ -44,11 +44,15 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 
 @app.route('/')
 def index():
-	if request.method == 'GET':
-		return render_template('index.html')
+	return render_template('index.html')
 
-@app.route('/index', methods = ['POST'])
-def picked_char():
+@app.route('/pick_chars', methods = ['POST'])
+def pick_chars():
+	if request.method == 'POST':
+		return render_template('pick_chars.html')
+
+@app.route('/picked_chars', methods = ['POST'])
+def picked_chars():
 	char_chosen_list = []
 	for char in ['med_hhld_inc', 'hhld_size_all', 'noise_res', 
 			'murder/manslaughter/homicide', 'rape/sex crime', 'robbery', 
