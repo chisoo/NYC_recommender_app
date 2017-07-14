@@ -10,9 +10,9 @@ def getLonLat(geom, coord_type):
     """Returns either longitudes and latitudes from geometry coordinate sequence. 
     Used with Polygon."""
     if coord_type == 'lon':
-        return list(geom.coords.xy[0])
+        return geom.coords.xy[0]
     elif coord_type == 'lat':
-        return list(geom.coords.xy[1])
+        return geom.coords.xy[1]
 
 def getPolyCoords(geom, coord_type):
     """Returns the coordinates (longitudes or latitudes of edges of a Polygon exterior)"""
@@ -28,9 +28,9 @@ def multiPolygonHandler(multi_poly, coord_type):
     # https://github.com/bokeh/bokeh/issues/2321"""
     for i, part in enumerate(multi_poly):
         if i == 0:
-            coord_arrays = [] + getPolyCoords(part, coord_type) + ['NaN']
+            coord_arrays = np.append(getPolyCoords(part, coord_type), np.nan)
         else: 
-            coord_arrays = coord_arrays + getPolyCoords(part, coord_type) + ['NaN']
+            coord_arrays = np.concatenate([coord_arrays, np.append(getPolyCoords(part, coord_type), np.nan)])
     # Return the coordinates
     return coord_arrays
 

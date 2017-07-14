@@ -1,5 +1,5 @@
 gunicorn==19.3.0
-bokeh==0.12.4
+bokeh==0.12.6
 Flask
 geopandas==0.2.1
 Jinja2==2.9.6
