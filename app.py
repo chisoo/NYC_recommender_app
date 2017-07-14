@@ -85,7 +85,7 @@ def recommendations():
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
 		bk_gp_df_for_graph = pickle.load(file_obj)
 
-	num_cluster = 20
+	num_cluster = 195
 	cluster5, cluster_centers, cluster_val = \
 		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
 

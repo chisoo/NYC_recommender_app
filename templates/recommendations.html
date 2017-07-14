@@ -52,25 +52,6 @@
 				
 				<h2>Details</h2>
 
-	  			<h4>Here are the characteristics and values you chose: </h4>
-				<table> 
-					{% for list in picked_vals_kv %}
-						<tr>
-							<td>            </td>
-							{% for item in list %}
-									<td> {{item}} </td>
-							{% endfor %}
-						</tr>
-					{% endfor %}
-					{% for values in cluster_centers %}
-						<tr>
-							<td> </td>
-							{% for i in values %}
-								<td> {{i}} </td>
-							{% endfor %}
-						</tr>
-					{% endfor %}
-				</table>
 				<p> Recommended: Group {{cluster_val}} </p>
 			</div>
 		</div>
