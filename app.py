@@ -77,7 +77,6 @@ def picked_chars():
 def recommendations():
 	# get the feature_list and val_list from user input
 	picked_vals_results = request.form
-	print(picked_vals_results)
 	feature_list = [k for k, v in picked_vals_results.items()]
 	val_list = [int(v) for k, v in picked_vals_results.items()]
 
@@ -114,7 +113,6 @@ def recommendations():
 			hover_list.append((hover_dict[item], "@{"+item+"}"))
 		else: 
 			hover_list.append((item, "@{"+item+"}"))
-	print(hover_list)
 
 	# prepare column data source
 	cluster_df_vars = feature_list + ['lon', 'lat', 'NTAName']
