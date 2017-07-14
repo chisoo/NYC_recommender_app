@@ -78,6 +78,10 @@ def picked_chars():
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list, 
 							var_dict = app.var_dict)
 
+@app.route('/plot', methods = ['POST'])
+def plot():
+	return render_template('plot.html')
+	
 @app.route('/recommendations', methods = ['POST'])
 def recommendations():
 	# get the feature_list and val_list from user input
