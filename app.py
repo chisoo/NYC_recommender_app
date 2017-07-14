@@ -45,11 +45,15 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 
 @app.route('/')
 def index():
-	script_bk_gp, div_bk_gp = draw_bk_gp_family_hhld()
-	script_nta, div_nta = draw_nta_family_hhld()
+	return render_template('index.html')
 
-	return render_template('index.html', script_bk_gp = script_bk_gp, div_bk_gp = div_bk_gp, 
-						    script_nta = script_nta, div_nta = div_nta)
+@app.route('/family_hhld_bk_gp_plot', methods = ['POST'])
+def family_hhld_bk_gp_plot():
+	return render_template('family_hhld_bk_gp_plot.html')
+
+@app.route('/family_hhld_nta_plot', methods = ['POST'])
+def family_hhld_nta_plot():
+	return render_template('family_hhld_nta_plot.html')
 
 @app.route('/pick_chars', methods = ['POST'])
 def pick_chars():
