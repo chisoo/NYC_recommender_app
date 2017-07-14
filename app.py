@@ -17,6 +17,7 @@ from bokeh.embed import components
 
 from bokeh_helper import setColumnDataSource
 from cluster_block_groups import cluster_block_groups
+from draw_example_maps import draw_bk_gp_family_hhld, draw_nta_family_hhld
 
 app = Flask(__name__)
 
@@ -44,7 +45,11 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	script_bk_gp, div_bk_gp = draw_bk_gp_family_hhld()
+	script_nta, div_nta = draw_nta_family_hhld()
+
+	return render_template('index.html', script_bk_gp = script_bk_gp, div_bk_gp = div_bk_gp, 
+						    script_nta = script_nta, div_nta = div_nta)
 
 @app.route('/pick_chars', methods = ['POST'])
 def pick_chars():

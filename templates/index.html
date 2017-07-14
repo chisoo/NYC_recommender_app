@@ -34,19 +34,43 @@
 			background: steelblue;
 		}
 		</style>
+
+		<link rel = "stylesheet" href = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css" type="text/css" />
+		<script type = "text/javascript" src = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
 	</head>
 
 	<body>
 		<div class = page>
 			<div class = header>
-	  			<h1>NYC Neighborhood Block Recommender </h1>
-	  		</div>
+				<h1>NYC Neighborhood Block Recommender </h1>
+			</div>
 
 			<div class = contents>
-				<h4>This is an index page!</h4>
-				<form action = '/pick_chars' method = 'POST'>
-					<input type = 'submit' value = 'Start'>
-				</form>				
+				<center> 
+					<h2> Why look at block group level? </h2>
+					<h3> Example: % Family Household </h3>
+					<table> 
+						<tr>
+							<td> <center> Neighborhood Level </center> </td>
+							<td> <center> Block Group Level </center> </td>
+						</tr>
+
+						<tr>
+							<td>
+								{{div_nta | safe}}
+								{{script_nta | safe}}
+							</td>
+							<td>
+								{{div_bk_gp | safe}}
+								{{script_bk_gp| safe }}
+							</td>
+						</tr>
+					</table>
+
+					<form action = '/pick_chars' method = 'POST'>
+						<input type = 'submit' value = 'Start'>
+					</form>	
+				</center>		
 			</div>
 		</div>
 	</body>
