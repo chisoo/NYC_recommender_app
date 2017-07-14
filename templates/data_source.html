@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang = "en">
+    <head>
+        <meta charset="utf-8">
+        <title>Capstone Project</title>
+        <style> 
+        html {
+            font-family: 'Helvetica';
+            background: white;
+        }
+
+        body { 
+            background: lightgrey;
+            max-width: 900px;
+            margin: 0 auto; 
+            padding: 5px 10px 5px 10px;
+        }
+
+        .header {
+            padding: 2px 10px 2px 10px;
+            background: lightsteelblue;
+        }
+
+        input[type = "submit"] {
+            padding: 0px 10px 0px 10px;
+            color: black;
+            background: lightsteelblue;
+            border: none;
+            box-shadow: 1px 1px 1px #4C6E91;
+        }
+        
+        input[type = "submit"]:hover {
+            background: steelblue;
+        }
+        </style>
+
+        <link rel = "stylesheet" href = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css" type="text/css" />
+        <script type = "text/javascript" src = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
+        {{script | safe }}
+    </head>
+
+    <body>
+        <div class = page>
+            <div class = header>
+                <h1>NYC Neighborhood Block Recommender </h1>
+            </div>  
+            <div class = contents> 
+                <h1><center>Recommendations</center></h1>
+                <center> 
+                <table border = '1'>
+                    <tr> 
+                        <th> Characteristics </th> 
+                        <th> Data Source </th> 
+                    </tr> 
+                    <tr> 
+                        <td> demographics </td>
+                        <td> ACS block group data </td>
+                    </tr>
+                    <tr>
+                        <td> crime rates </td>
+                        <td> NYPD </td>
+                    </tr>
+                    <tr>
+                        <td> noise level </td> 
+                        <td> NYC open data (311 Service Requests) </td>
+                    </tr>
+                    <tr>
+                        <td> number of trees </td>
+                        <td> NYC open data (Street Tree Census) </td>
+                    </tr>
+                    <tr>
+                        <td> school quality </td> 
+                        <td> NYC Department of Education </td> 
+                    </tr>
+                    <tr>
+                        <td> access to public transportation </td> 
+                        <td> MTA </td> 
+                    </tr>
+                    <tr>
+                        <td> number of restaurants and bars </td>
+                        <td> Foursquare API </td> 
+                    </tr>
+                </table>
+                <form id='input' method='post' action='pick_chars'>
+                    <input type='submit' value='Back'>
+                </form>                
+                </center>
+            </div>
+        </div>
+    </body>
+</html>

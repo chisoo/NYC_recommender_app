@@ -60,6 +60,11 @@ def pick_chars():
 	if request.method == 'POST':
 		return render_template('pick_chars.html')
 
+@app.route('/data_source', methods = ['POST'])
+def data_source():
+	if request.method == 'POST':
+		return render_template('data_source.html')
+		
 @app.route('/picked_chars', methods = ['POST'])
 def picked_chars():
 	char_chosen_list = []
