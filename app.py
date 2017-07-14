@@ -26,8 +26,8 @@ data_path = 'Data/'
 app.var_dict = {'med_hhld_inc':'Median household income', 
 				'hhld_size_all': 'Household Size', 
 				'noise_res': 'Noise complaint (residential)', 
-				'murder/manslaughter/homicide': 'Murder/Manslaughter/Homicide', 
-				'rape/sex crime': 'Rape/Sex Crime', 
+				'murder_manslaughter_homicide': 'Murder/Manslaughter/Homicide', 
+				'rape_sex_crime': 'Rape/Sex Crime', 
 				'robbery': 'Robbery', 
 				'assault': 'Assault', 
 				'larceny': 'Larceny', 
@@ -37,7 +37,7 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'harrassment': 'Harrassment', 
 				'drug': 'Drug', 
 				'weapon': 'Weapon', 
-				'good trees': 'Number of healthy trees', 
+				'good_trees': 'Number of healthy trees', 
 				'med_gross_rent': 'Median gross rent', 
 				'med_num_rooms': 'Median number of rooms', 
 				'num_lines': 'Number of subway lines', 
@@ -64,9 +64,9 @@ def pick_chars():
 def picked_chars():
 	char_chosen_list = []
 	for char in ['med_hhld_inc', 'hhld_size_all', 'noise_res', 
-			'murder/manslaughter/homicide', 'rape/sex crime', 'robbery', 
+			'murder_manslaughter_homicide', 'rape_sex_crime', 'robbery', 
 			'assault', 'larceny', 'burglary', 'arson', 'theft', 'harrassment', 
-			'drug', 'weapon', 'good trees', 'med_gross_rent', 'med_num_rooms', 
+			'drug', 'weapon', 'good_trees', 'med_gross_rent', 'med_num_rooms', 
 			'num_lines', 'num_food_venues']:
 		if request.form.get(char): 
 			char_chosen_list.append(char)
@@ -85,6 +85,10 @@ def recommendations():
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
 		bk_gp_df_for_graph = pickle.load(file_obj)
 
+	bk_gp_df_for_graph.rename(columns = {'Noise - Residential': 'noise_res', 
+										 'murder/manslaughter/homicide': 'murder_manslaughter_homicide', 
+										 'rape/sex crime': 'rape_sex_crime', 
+										 'good trees': 'good_trees'}, inplace = True)
 	num_cluster = 195
 	cluster5, cluster_centers, cluster_val = \
 		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
@@ -101,7 +105,7 @@ def recommendations():
 	hover_dict = {'med_hhld_inc': 'median income', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
-				  'good trees': 'number of healthy trees', 
+				  'good_trees': 'number of healthy trees', 
 				  'num_lines': 'number of subway lines', 
 				  'num_venues': 'number of any venues', 
 				  'num_food_venues': 'number of food venues'}
