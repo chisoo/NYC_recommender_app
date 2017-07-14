@@ -34,10 +34,19 @@
 	  		<div class = contents> 
 				<h4>You have picked the following characteristics</h4>
 				<form action = '/recommendations' method = 'POST'>
-					{% for char in char_chosen_list %}
-						{%- set val = var_dict[char] %}
-						<p> {{val}} <input type = 'number' name = '{{char}}'> <br /> </p>
-					{% endfor %}
+					<table>
+						{% for char in char_chosen_list %}
+							{%- set val = var_dict[char] %}
+							<tr> 
+								<td> <center>
+								{{val}} <input type = 'number' name = '{{char}}'> </center> 
+								</td>
+								<td> 
+								<img src = 'static/{{char}}_hist.png' style = 'width: 400px')>
+								</td>
+							</tr>
+						{% endfor %}
+					</table>
 					<input type = 'submit' value = 'Submit'>
 				</form>
 			</div>

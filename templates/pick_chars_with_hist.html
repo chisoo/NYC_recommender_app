@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Capstone Project</title>
+		<style> 
+		html {
+			font-family: 'Helvetica';
+			background: white;
+			height: 500px;
+		}
+
+		body { 
+			background: lightgrey;
+			max-width: 900px;
+			margin: 0 auto; 
+			padding: 5px 10px 5px 10px;
+		}
+
+		.header {
+			padding: 2px 10px 2px 10px;
+			background: lightsteelblue;
+		}
+
+		input[type = "submit"] {
+			padding: 0px 10px 0px 10px;
+			color: black;
+			background: lightsteelblue;
+			border: none;
+			box-shadow: 1px 1px 1px #4C6E91;
+		}
+		
+		input[type = "submit"]:hover {
+			background: steelblue;
+		}
+		</style>
+	</head>
+
+	<body>
+		<div class = page>
+			<div class = header>
+	  			<h1>NYC Neighborhood Block Recommender </h1>
+	  		</div>
+
+			<div class = contents>
+				<h4>Please choose the characteristics you care about from the following: </h4>
+				
+				<form id='input' method='post' action='picked_chars'>
+				
+				<p> <center> <h4> demographics and amenities </h4> </center> </p>
+				<table>
+					<col width = '250px' />
+					<col width = '250px' />
+					<col width = '250px' />	
+
+					<tr>
+						<td> <center>
+						<input type='checkbox' name='med_hhld_inc' value='Median household income'>Median household income </center>
+						</td>
+						<td> <center>
+						<input type='checkbox' name='hhld_size_all' value='Household Size'>Household size </center>
+						</td>
+						<td> <center> 
+						<input type='checkbox' name='med_gross_rent' value='Median gross rent'>Median gross rent </center>
+						</td>
+					</tr>
+					<tr>
+						<td>
+						<img src = 'static/med_hhld_inc_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/hhld_size_all_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/med_gross_rent_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+
+					<tr>
+						<td> <center> 
+						<input type='checkbox' name='med_num_rooms' value='Median number of rooms'>Median number of rooms </center>
+						</td>						
+						<td> <center>
+						<input type='checkbox' name='noise_res' value='Noise complaint (residential)'>Noise complaint (residential) </center>
+						</td>
+						<td> <center> 
+						<input type='checkbox' name='good_trees' value='Number of healthy trees'>Number of healthy trees </center>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+						<img src = 'static/med_num_rooms_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/noise_res_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/good_trees_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+
+					<tr>
+						<td> <cetner> 
+						<input type='checkbox' name='num_lines' value='Number of subway lines'>Number of subway lines </cetner> 
+						</td>
+						<td> <center> 
+						<input type='checkbox' name='num_food_venues' value='Number of food venues'>Number of food venues </center>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+						<img src = 'static/num_lines_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/num_food_venues_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+				</table>
+
+				<p> <center> <h4> Crime </h4> </center> </p>
+				<table>
+					<col width = '250px' />
+					<col width = '250px' />
+					<col width = '250px' />	
+
+					<tr>
+						<td> <center>
+						<input type='checkbox' name='murder_manslaughter_homicide' value='Murder/Manslaughter/Homicide'>Murder/Manslaughter/Homicide </center> 
+						</td>
+						<td> <center>
+						<input type='checkbox' name='rape_sex_crime' value='Rape/Sex Crime'>Rape/Sex crime </center>
+						</td>
+						<td> <center>
+						<input type='checkbox' name='robbery' value='Robbery'>Robbery </center>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+						<img src = 'static/murder_manslaughter_homicide_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/rape_sex_crime_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/robbery_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+
+					<tr>
+						<td> <center>
+						<input type='checkbox' name='assault' value='Assault'>Assault </center>
+						</td>
+						<td> <center>
+						<input type='checkbox' name='larceny' value='Larceny'>Larceny </center>
+						</td>
+						<td> <center>
+						<input type='checkbox' name='burglary' value='Burglary'>Burglary </center>
+						</td>
+					</tr>
+					<tr> 
+						<td>
+						<img src = 'static/assault_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/larceny_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/burglary_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+
+					<tr>
+						<td> <center>
+						<input type='checkbox' name='arson' value='Arson'>Arson </center> 
+						</td>
+						<td> <center>
+						<input type='checkbox' name='theft' value='Theft'>Theft </center>
+						</td>
+						<td> <center> 
+						<input type='checkbox' name='harrassment' value='Harrassment'>Harrassment </center>
+						</td>
+					</tr>
+
+					<tr> 
+						<td>
+						<img src = 'static/arson_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/theft_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/harrassment_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+
+					<tr>
+						<td> <center> 
+						<input type='checkbox' name='drug' value='Drug'>Drug </center>
+						</td>
+						<td> <center> 
+						<input type='checkbox' name='weapon' value='Weapon'>Weapon </center>
+						</td>
+					</tr>
+
+					<tr> 
+						<td>
+						<img src = 'static/drug_hist.png' style = 'width: 250px'> 
+						</td>
+						<td>
+						<img src = 'static/weapon_hist.png' style = 'width: 250px'> 
+						</td>
+					</tr>
+				</table>
+
+					<input type='submit' value='Submit'>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
