@@ -81,7 +81,7 @@ def picked_chars():
 @app.route('/plot', methods = ['POST'])
 def plot():
 	return render_template('plot.html')
-	
+
 @app.route('/recommendations', methods = ['POST'])
 def recommendations():
 	# get the feature_list and val_list from user input
@@ -97,7 +97,7 @@ def recommendations():
 										 'murder/manslaughter/homicide': 'murder_manslaughter_homicide', 
 										 'rape/sex crime': 'rape_sex_crime', 
 										 'good trees': 'good_trees'}, inplace = True)
-	num_cluster = 195
+	num_cluster = 20
 	cluster5, cluster_centers, cluster_val = \
 		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
 
