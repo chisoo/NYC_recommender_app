@@ -25,7 +25,7 @@ def cluster_block_groups(bk_gp_df, num_clusters, feature_list, val_list):
     ### prepare data for clustering
     bk_gp_df.set_index('GEOID', inplace = True)
     bk_gp_df.head(3)
-
+    print(feature_list)
     # pick only relevant variables
     bk_gp_df_for_ml = bk_gp_df[feature_list].copy()
 
