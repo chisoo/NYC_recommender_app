@@ -72,12 +72,16 @@ def picked_chars():
 
 # example plots for viz miniproject
 @app.route('/example_plot1')
-def family_hhld_bk_gp_plot():
+def example_plot1():
 	return render_template('family_hhld_bk_gp_plot.html')
 
 @app.route('/example_plot2')
-def family_hhld_nta_plot():
+def example_plot2():
 	return render_template('family_hhld_nta_plot.html')
+
+@app.route('/example_plot3')
+def example_plot3():
+	return render_template('hist_example.html')
 
 @app.route('/plot', methods = ['POST'])
 def plot():
