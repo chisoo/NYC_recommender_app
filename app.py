@@ -47,14 +47,6 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 def index():
 	return render_template('index.html')
 
-@app.route('/family_hhld_bk_gp_plot', methods = ['POST'])
-def family_hhld_bk_gp_plot():
-	return render_template('family_hhld_bk_gp_plot.html')
-
-@app.route('/family_hhld_nta_plot', methods = ['POST'])
-def family_hhld_nta_plot():
-	return render_template('family_hhld_nta_plot.html')
-
 @app.route('/pick_chars', methods = ['POST'])
 def pick_chars():
 	if request.method == 'POST':
@@ -77,6 +69,15 @@ def picked_chars():
 			char_chosen_list.append(char)
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list, 
 							var_dict = app.var_dict)
+
+# example plots for viz miniproject
+@app.route('/example_plot1')
+def family_hhld_bk_gp_plot():
+	return render_template('family_hhld_bk_gp_plot.html')
+
+@app.route('/example_plot2')
+def family_hhld_nta_plot():
+	return render_template('family_hhld_nta_plot.html')
 
 @app.route('/plot', methods = ['POST'])
 def plot():
