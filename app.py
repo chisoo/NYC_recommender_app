@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect
 import pickle
 
-from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics.pairwise import euclidean_distances
 
 import geopandas as gpd
 from geopandas import GeoDataFrame
@@ -16,7 +16,7 @@ from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
 from bokeh.embed import components
 
 from bokeh_helper import setColumnDataSource
-from cluster_block_groups import cluster_block_groups
+from find_closest_bk_gp import find_closest_bk_gp
 from draw_example_maps import draw_bk_gp_family_hhld, draw_nta_family_hhld
 
 app = Flask(__name__)
@@ -102,19 +102,20 @@ def recommendations():
 										 'murder/manslaughter/homicide': 'murder_manslaughter_homicide', 
 										 'rape/sex crime': 'rape_sex_crime', 
 										 'good trees': 'good_trees'}, inplace = True)
-	num_cluster = 20
-	cluster5, cluster_centers, cluster_val = \
-		cluster_block_groups(bk_gp_df_for_graph, num_cluster, feature_list, val_list)
+	num_to_find = 10
+	closest_bk_gp_df = \
+		find_closest_bk_gp(bk_gp_df_for_graph, num_to_find, feature_list, val_list)
 
-	cluster_df = cluster5[cluster5['cluster'] == 1].copy()
-	cluster_centers = cluster_centers.astype(int).astype(str)
-	relevent_NTAs = list(cluster_df['NTAName'].unique()).sort()
+	# merge in list of NYNTA for GEOID
+	with open('{}geoid_nynta_crosswalk'.format(data_path), 'rb') as file_obj: 
+		geoid_nynta_crosswalk = pickle.load(file_obj)
+	closest_bk_gp_df = closest_bk_gp_df.merge(geoid_nynta_crosswalk).sort_values('rank')
 
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
 
 	# setup the list for hover
-	hover_list = [("Neighborhood", "@NTAName")]
+	hover_list = [("Neighborhood", "@NTAName"), ("Rank", "@rank")]
 	hover_dict = {'med_hhld_inc': 'median income', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
@@ -129,8 +130,8 @@ def recommendations():
 			hover_list.append((item, "@{"+item+"}"))
 
 	# prepare column data source
-	cluster_df_vars = feature_list + ['lon', 'lat', 'NTAName']
-	cluster_source = setColumnDataSource(cluster_df, cluster_df_vars)
+	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'NTAName']
+	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
 	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
 
 	feature_list = np.append(['Group'], feature_list)
@@ -138,25 +139,23 @@ def recommendations():
 	picked_vals_kv = [feature_list, val_list]
 
 	# initialize the figure
-	cluster_plot = figure()
+	bk_gp_plot = figure()
 
-	# plot the cluster and boundary
-	cluster_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
+	# plot the block groups and boundary
+	bk_gp_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
 				source = nynta_source, line_width = 1, name = 'nynta')
-	cluster_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, 
-				source = cluster_source, name = 'cluster')
+	bk_gp_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, 
+				source = bk_gp_source, name = 'bk_gp')
 
 	# add hover tool
-	hover = HoverTool(names = ['cluster'])
+	hover = HoverTool(names = ['bk_gp'])
 	hover.tooltips = hover_list
-	cluster_plot.add_tools(hover)
+	bk_gp_plot.add_tools(hover)
 
-	script, div = components(cluster_plot)
+	script, div = components(bk_gp_plot)
 
 	return render_template("recommendations.html", script = script, div = div, 
-							picked_vals_kv = picked_vals_kv, num_cluster = num_cluster, 
-							cluster_centers = cluster_centers, cluster_val = cluster_val, 
-							relevent_NTAs = relevent_NTAs)  
+							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find)  
 
 if __name__ == '__main__':
 	app.run(port=33507)
