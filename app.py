@@ -111,11 +111,16 @@ def recommendations():
 		geoid_nynta_crosswalk = pickle.load(file_obj)
 	closest_bk_gp_df = closest_bk_gp_df.merge(geoid_nynta_crosswalk).sort_values('rank')
 
+	# save rank and NTANames as dictionary
+	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
+	NTA_dict = closest_bk_gp_df[['GEOID', 'NTAName']].set_index('GEOID').to_dict()
+
+	# read in NYNTA shape file for boundary
 	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
 
 	# setup the list for hover
-	hover_list = [("Neighborhood", "@NTAName"), ("Rank", "@rank")]
+	hover_list = [("Rank", "@rank"), ("Neighborhood", "@NTAName")]
 	hover_dict = {'med_hhld_inc': 'median income', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
@@ -155,7 +160,8 @@ def recommendations():
 	script, div = components(bk_gp_plot)
 
 	return render_template("recommendations.html", script = script, div = div, 
-							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find)  
+							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find, 
+							rank_dict = rank_dict, NTA_dict = NTA_dict)  
 
 if __name__ == '__main__':
 	app.run(port=33507)

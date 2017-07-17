@@ -51,6 +51,7 @@ def find_closest_bk_gp(df, num_to_find, feature_list, val_list):
     rank_df = pd.DataFrame(dist_series.sort_values()[1:num_to_find + 1].index, 
                                 columns = ['GEOID']).reset_index()
     rank_df.rename(columns = {'index': 'rank'}, inplace = True)
+    rank_df['rank'] = rank_df['rank'] + 1
 
     closest_bk_gp_df = df.merge(rank_df).copy()
 

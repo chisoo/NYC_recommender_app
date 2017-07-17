@@ -50,6 +50,16 @@
 				{{div | safe}}
 				</center>
 				
+				<table> 
+				{%- set rank_vals = rank_dict['GEOID'] %}
+				{%- set NTA_vals = NTA_dict['NTAName'] %}
+				{% for k, v in rank_vals.items() %}
+					<tr> 
+					{%- set val = NTA_vals[v] %}
+					{{ k }}: {{ val }} <br>
+					</tr>
+				{% endfor %}
+				</table>
 			</div>
 		</div>
 	</body>
