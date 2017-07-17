@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Capstone Project</title>
+		<style> 
+		html {
+			font-family: 'Helvetica';
+			background: white;
+			height: 500px;
+		}
+
+		body { 
+			background: lightgrey;
+			max-width: 900px;
+			margin: 0 auto; 
+			padding: 5px 10px 5px 10px;
+		}
+
+		.header {
+			padding: 2px 10px 2px 10px;
+			background: lightsteelblue;
+		}
+
+		input[type = "submit"] {
+			padding: 0px 10px 0px 10px;
+			color: black;
+			background: lightsteelblue;
+			border: none;
+			box-shadow: 1px 1px 1px #4C6E91;
+		}
+		
+		input[type = "submit"]:hover {
+			background: steelblue;
+		}
+		</style>
+
+		<link rel = "stylesheet" href = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css" type="text/css" />
+		<script type = "text/javascript" src = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
+	</head>
+
+	<body>
+		<div class = page>
+
+			<div class = contents>
+				<center> 
+					<h2> Histogram of median household income </h2>
+					<img src = 'static/histograms/med_hhld_inc_hist.png'> 
+				</center>		
+			</div>
+		</div>
+	</body>
+</html>
