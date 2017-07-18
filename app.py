@@ -107,9 +107,11 @@ def recommendations():
 		find_closest_bk_gp(bk_gp_df_for_graph, num_to_find, feature_list, val_list)
 
 	# merge in list of NYNTA for GEOID
-	with open('{}geoid_nynta_crosswalk'.format(data_path), 'rb') as file_obj: 
-		geoid_nynta_crosswalk = pickle.load(file_obj)
-	closest_bk_gp_df = closest_bk_gp_df.merge(geoid_nynta_crosswalk).sort_values('rank')
+	with open('{}nynta_df_w_geoid'.format(data_path), 'rb') as file_obj: 
+		nynta_df_w_geoid = pickle.load(file_obj)
+	closest_bk_gp_df = closest_bk_gp_df\
+						.merge(nynta_df_w_geoid[['GEOID', 'NTAName']].copy())\
+						.sort_values('rank')
 
 	# save rank and NTANames as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
@@ -149,7 +151,7 @@ def recommendations():
 	# plot the block groups and boundary
 	bk_gp_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
 				source = nynta_source, line_width = 1, name = 'nynta')
-	bk_gp_plot.patches('lon', 'lat', fill_color = 'blue', alpha = 0.5, 
+	bk_gp_plot.patches('lon', 'lat', fill_color = 'blue', 
 				source = bk_gp_source, name = 'bk_gp')
 
 	# add hover tool
