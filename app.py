@@ -106,23 +106,23 @@ def recommendations():
 	closest_bk_gp_df = \
 		find_closest_bk_gp(bk_gp_df_for_graph, num_to_find, feature_list, val_list)
 
-	# merge in list of NYNTA for GEOID
-	with open('{}nynta_df_w_geoid'.format(data_path), 'rb') as file_obj: 
-		nynta_df_w_geoid = pickle.load(file_obj)
+	# merge in zillow neighborhood for each GEOID
+	with open('{}zillow_df_w_geoid'.format(data_path), 'rb') as file_obj: 
+		zillow_df_w_geoid = pickle.load(file_obj)
 	closest_bk_gp_df = closest_bk_gp_df\
-						.merge(nynta_df_w_geoid[['GEOID', 'NTAName']].copy())\
+						.merge(zillow_df_w_geoid[['GEOID', 'Name']].copy())\
 						.sort_values('rank')
 
-	# save rank and NTANames as dictionary
+	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
-	NTA_dict = closest_bk_gp_df[['GEOID', 'NTAName']].set_index('GEOID').to_dict()
+	zillow_dict = closest_bk_gp_df[['GEOID', 'Name']].set_index('GEOID').to_dict()
 
-	# read in NYNTA shape file for boundary
-	with open('{}nynta_shape_df'.format(data_path), 'rb') as file_obj: 
+	# read in zillow shape file for boundary
+	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 
 		boundary_df = pickle.load(file_obj)
 
 	# setup the list for hover
-	hover_list = [("Rank", "@rank"), ("Neighborhood", "@NTAName")]
+	hover_list = [("Rank", "@rank"), ("Neighborhood", "@Name")]
 	hover_dict = {'med_hhld_inc': 'median income', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
@@ -137,9 +137,9 @@ def recommendations():
 			hover_list.append((item, "@{"+item+"}"))
 
 	# prepare column data source
-	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'NTAName']
+	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'Name']
 	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
-	nynta_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
+	zillow_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
 
 	feature_list = np.append(['Group'], feature_list)
 	val_list = np.append(['Desired'], val_list)
@@ -150,7 +150,7 @@ def recommendations():
 
 	# plot the block groups and boundary
 	bk_gp_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
-				source = nynta_source, line_width = 1, name = 'nynta')
+				source = zillow_source, line_width = 1, name = 'zillow')
 	bk_gp_plot.patches('lon', 'lat', fill_color = 'blue', 
 				source = bk_gp_source, name = 'bk_gp')
 
@@ -163,7 +163,7 @@ def recommendations():
 
 	return render_template("recommendations.html", script = script, div = div, 
 							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find, 
-							rank_dict = rank_dict, NTA_dict = NTA_dict)  
+							rank_dict = rank_dict, zillow_dict = zillow_dict)  
 
 if __name__ == '__main__':
 	app.run(port=33507)
