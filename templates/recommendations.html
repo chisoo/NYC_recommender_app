@@ -49,27 +49,29 @@
 				<center>
 				{{ div | safe }}
 				</center>
-				
-				<table border = '1'> 
-					<tr> 
-						<th> Rank </th>
-						<th> Neighborhood </th>
-						<th> County </th>
-					</tr>
-					{%- set rank_vals = rank_dict['GEOID'] %}
-					{%- set zillow_vals = zillow_dict['Name'] %}
-					{%- set cnty_vals = zillow_dict['County'] %}
-	
-					{% for k, v in rank_vals.items() %}
-						{%- set zillow_val = zillow_vals[v] %}
-						{%- set cnty_val = cnty_vals[v] %}
+
+				<center>
+					<table border = '1'> 
 						<tr> 
-							<td> {{ k }} </td> 
-							<td> {{ zillow_val }} </td>
-							<td> {{ cnty_val }} </td>
+							<th> Rank </th>
+							<th> Neighborhood </th>
+							<th> Borough </th>
 						</tr>
-					{% endfor %}
-				</table>
+						{%- set rank_vals = rank_dict['GEOID'] %}
+						{%- set zillow_vals = zillow_dict['Name'] %}
+						{%- set boro_vals = zillow_dict['Boro'] %}
+		
+						{% for k, v in rank_vals.items() %}
+							{%- set zillow_val = zillow_vals[v] %}
+							{%- set boro_val = boro_vals[v] %}
+							<tr> 
+								<td> {{ k }} </td> 
+								<td> {{ zillow_val }} </td>
+								<td> {{ boro_val }} </td>
+							</tr>
+						{% endfor %}
+					</table>
+				</center>
 			</div>
 		</div>
 	</body>

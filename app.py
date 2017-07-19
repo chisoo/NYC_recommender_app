@@ -28,6 +28,7 @@ data_path = 'Data/'
 app.var_dict = {'med_hhld_inc':'Median household income', 
 				'hhld_size_all': 'Household Size', 
 				'noise_res': 'Noise complaint (residential)', 
+				'rodent': 'Rodent complaint', 
 				'murder_manslaughter_homicide': 'Murder/Manslaughter/Homicide', 
 				'rape_sex_crime': 'Rape/Sex Crime', 
 				'robbery': 'Robbery', 
@@ -44,7 +45,7 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'med_num_rooms': 'Median number of rooms', 
 				'num_lines': 'Number of subway lines', 
 				'num_food_venues': 'Number of food venues'}
-google_map_key = os.environ.get('GOOGLE_MAP_KEY')
+app.char_to_avoid_list = []
 
 @app.route('/')
 def index():
@@ -63,13 +64,15 @@ def data_source():
 @app.route('/picked_chars', methods = ['POST'])
 def picked_chars():
 	char_chosen_list = []
-	for char in ['med_hhld_inc', 'hhld_size_all', 'noise_res', 
-			'murder_manslaughter_homicide', 'rape_sex_crime', 'robbery', 
-			'assault', 'larceny', 'burglary', 'arson', 'theft', 'harrassment', 
-			'drug', 'weapon', 'good_trees', 'med_gross_rent', 'med_num_rooms', 
-			'num_lines', 'num_food_venues']:
+	for char in ['med_hhld_inc', 'hhld_size_all', 'good_trees', 'med_gross_rent',
+			     'med_num_rooms', 'num_lines', 'num_food_venues']:
 		if request.form.get(char): 
 			char_chosen_list.append(char)
+	for char in ['noise_res', 'rodent', 'murder_manslaughter_homicide', 
+				 'rape_sex_crime', 'robbery', 'assault', 'larceny', 'burglary', 
+				 'arson', 'theft', 'harrassment', 'drug', 'weapon']: 
+		if request.form.get(char): 
+			app.char_to_avoid_list.append(char)
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list, 
 							var_dict = app.var_dict)
 
@@ -86,26 +89,21 @@ def example_plot2():
 def example_plot3():
 	return render_template('hist_example.html')
 
-@app.route('/plot', methods = ['POST'])
-def plot():
-	return render_template('plot.html')
-
 @app.route('/recommendations', methods = ['POST'])
 def recommendations():
 	# get the feature_list and val_list from user input
 	picked_vals_results = request.form
-	feature_list = [k for k, v in picked_vals_results.items()]
+	feature_list = [k for k, v in picked_vals_results.items()] 
 	val_list = [int(v) for k, v in picked_vals_results.items()]
+	for item in app.char_to_avoid_list: 
+		feature_list.append(item)
+		val_list.append(0)
 
 	# read in the dataframe prepared for the graph
 	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
 		bk_gp_df_for_graph = pickle.load(file_obj)
 
-	bk_gp_df_for_graph.rename(columns = {'Noise - Residential': 'noise_res', 
-										 'murder/manslaughter/homicide': 'murder_manslaughter_homicide', 
-										 'rape/sex crime': 'rape_sex_crime', 
-										 'good trees': 'good_trees'}, inplace = True)
-	num_to_find = 10
+	num_to_find = 5
 	closest_bk_gp_df = \
 		find_closest_bk_gp(bk_gp_df_for_graph, num_to_find, feature_list, val_list)
 
@@ -113,12 +111,13 @@ def recommendations():
 	with open('{}zillow_df_w_geoid'.format(data_path), 'rb') as file_obj: 
 		zillow_df_w_geoid = pickle.load(file_obj)
 	closest_bk_gp_df = closest_bk_gp_df\
-						.merge(zillow_df_w_geoid[['GEOID', 'Name', 'County']].copy())\
+						.merge(zillow_df_w_geoid[['GEOID', 'Name', 'Boro']].copy())\
 						.sort_values('rank')
 
 	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
-	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'County']].set_index('GEOID').to_dict()
+	vars_for_result_table = ['GEOID', 'Name', 'Boro'] + feature_list
+	zillow_dict = closest_bk_gp_df[vars_for_result_table].set_index('GEOID').to_dict()
 
 	# read in zillow shape file for boundary
 	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 
@@ -129,10 +128,12 @@ def recommendations():
 	hover_dict = {'med_hhld_inc': 'median income', 
 				  'hhld_size_all': 'household size',
 				  'noise_res': 'noise complaint (residential)', 
+				  'rodent': 'rodent complaint', 
 				  'good_trees': 'number of healthy trees', 
 				  'num_lines': 'number of subway lines', 
 				  'num_venues': 'number of any venues', 
 				  'num_food_venues': 'number of food venues'}
+
 	for item in feature_list:  
 		if item in hover_dict.keys():
 			hover_list.append((hover_dict[item], "@{"+item+"}"))
@@ -144,9 +145,7 @@ def recommendations():
 	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
 	zillow_source = setColumnDataSource(zillow_shape_df, ['lon', 'lat'])
 
-	feature_list = np.append(['Group'], feature_list)
-	val_list = np.append(['Desired'], val_list)
-	picked_vals_kv = [feature_list, val_list]
+	picked_vals_kv = [['Group'] + feature_list, ['Desired'] + val_list]
 
 	# initialize the figure
 	bk_gp_plot = figure()
@@ -167,7 +166,8 @@ def recommendations():
 
 	return render_template("recommendations.html", script = script, div = div,  
 							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find, 
-							rank_dict = rank_dict, zillow_dict = zillow_dict)  
+							rank_dict = rank_dict, zillow_dict = zillow_dict, 
+							feature_list = feature_list)  
 
 if __name__ == '__main__':
 	app.run(port=33507)
