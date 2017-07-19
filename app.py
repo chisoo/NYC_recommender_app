@@ -9,11 +9,13 @@ from geopandas import GeoDataFrame
 
 import numpy as np
 import pandas as pd
+import os
 
 from bokeh.io import show
 from bokeh.plotting import figure, save, output_file
 from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
 from bokeh.embed import components
+from bokeh.resources import CDN
 
 from bokeh_helper import setColumnDataSource
 from find_closest_bk_gp import find_closest_bk_gp
@@ -42,6 +44,7 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'med_num_rooms': 'Median number of rooms', 
 				'num_lines': 'Number of subway lines', 
 				'num_food_venues': 'Number of food venues'}
+google_map_key = os.environ.get('GOOGLE_MAP_KEY')
 
 @app.route('/')
 def index():
@@ -110,16 +113,16 @@ def recommendations():
 	with open('{}zillow_df_w_geoid'.format(data_path), 'rb') as file_obj: 
 		zillow_df_w_geoid = pickle.load(file_obj)
 	closest_bk_gp_df = closest_bk_gp_df\
-						.merge(zillow_df_w_geoid[['GEOID', 'Name']].copy())\
+						.merge(zillow_df_w_geoid[['GEOID', 'Name', 'County']].copy())\
 						.sort_values('rank')
 
 	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
-	zillow_dict = closest_bk_gp_df[['GEOID', 'Name']].set_index('GEOID').to_dict()
+	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'County']].set_index('GEOID').to_dict()
 
 	# read in zillow shape file for boundary
 	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 
-		boundary_df = pickle.load(file_obj)
+		zillow_shape_df = pickle.load(file_obj)
 
 	# setup the list for hover
 	hover_list = [("Rank", "@rank"), ("Neighborhood", "@Name")]
@@ -139,7 +142,7 @@ def recommendations():
 	# prepare column data source
 	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'Name']
 	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
-	zillow_source = setColumnDataSource(boundary_df, ['lon', 'lat'])
+	zillow_source = setColumnDataSource(zillow_shape_df, ['lon', 'lat'])
 
 	feature_list = np.append(['Group'], feature_list)
 	val_list = np.append(['Desired'], val_list)
@@ -148,11 +151,12 @@ def recommendations():
 	# initialize the figure
 	bk_gp_plot = figure()
 
-	# plot the block groups and boundary
-	bk_gp_plot.patches('lon', 'lat', fill_color = None, line_color = 'black', 
-				source = zillow_source, line_width = 1, name = 'zillow')
+	# plot grid
+	bk_gp_plot.patches('lon', 'lat', fill_color = 'grey', alpha = 0.2, 
+					   line_color = 'black', line_width = 0.5, 
+					   source = zillow_source, name = 'zillow')
 	bk_gp_plot.patches('lon', 'lat', fill_color = 'blue', 
-				source = bk_gp_source, name = 'bk_gp')
+					   source = bk_gp_source, name = 'bk_gp')
 
 	# add hover tool
 	hover = HoverTool(names = ['bk_gp'])
@@ -161,7 +165,7 @@ def recommendations():
 
 	script, div = components(bk_gp_plot)
 
-	return render_template("recommendations.html", script = script, div = div, 
+	return render_template("recommendations.html", script = script, div = div,  
 							picked_vals_kv = picked_vals_kv, num_to_find = num_to_find, 
 							rank_dict = rank_dict, zillow_dict = zillow_dict)  
 

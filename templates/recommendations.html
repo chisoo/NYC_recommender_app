@@ -36,7 +36,7 @@
 
 		<link rel = "stylesheet" href = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.css" type="text/css" />
 		<script type = "text/javascript" src = "http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.js"></script>
-		{{script | safe }}
+		{{ script | safe }}
 	</head>
 
 	<body>
@@ -47,18 +47,28 @@
 	  		<div class = contents> 
 				<h1><center>Recommendations</center></h1>
 				<center>
-				{{div | safe}}
+				{{ div | safe }}
 				</center>
 				
-				<table> 
-				{%- set rank_vals = rank_dict['GEOID'] %}
-				{%- set zillow_vals = zillow_dict['Name'] %}
-				{% for k, v in rank_vals.items() %}
+				<table border = '1'> 
 					<tr> 
-					{%- set val = zillow_vals[v] %}
-					{{ k }}: {{ val }} <br>
+						<th> Rank </th>
+						<th> Neighborhood </th>
+						<th> County </th>
 					</tr>
-				{% endfor %}
+					{%- set rank_vals = rank_dict['GEOID'] %}
+					{%- set zillow_vals = zillow_dict['Name'] %}
+					{%- set cnty_vals = zillow_dict['County'] %}
+	
+					{% for k, v in rank_vals.items() %}
+						{%- set zillow_val = zillow_vals[v] %}
+						{%- set cnty_val = cnty_vals[v] %}
+						<tr> 
+							<td> {{ k }} </td> 
+							<td> {{ zillow_val }} </td>
+							<td> {{ cnty_val }} </td>
+						</tr>
+					{% endfor %}
 				</table>
 			</div>
 		</div>
