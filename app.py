@@ -116,8 +116,7 @@ def recommendations():
 
 	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
-	vars_for_result_table = ['GEOID', 'Name', 'Boro'] + feature_list
-	zillow_dict = closest_bk_gp_df[vars_for_result_table].set_index('GEOID').to_dict()
+	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'Boro']].set_index('GEOID').to_dict()
 
 	# read in zillow shape file for boundary
 	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 
@@ -143,7 +142,7 @@ def recommendations():
 	# prepare column data source
 	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'Name']
 	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
-	zillow_source = setColumnDataSource(zillow_shape_df, ['lon', 'lat'])
+	zillow_source = setColumnDataSource(zillow_shape_df, ['lon', 'lat', 'Name'])
 
 	picked_vals_kv = [['Group'] + feature_list, ['Desired'] + val_list]
 
@@ -158,9 +157,9 @@ def recommendations():
 					   source = bk_gp_source, name = 'bk_gp')
 
 	# add hover tool
-	hover = HoverTool(names = ['bk_gp'])
-	hover.tooltips = hover_list
-	bk_gp_plot.add_tools(hover)
+	hover1 = HoverTool(names = ['bk_gp'])
+	hover1.tooltips = hover_list
+	bk_gp_plot.add_tools(hover1)
 
 	script, div = components(bk_gp_plot)
 
