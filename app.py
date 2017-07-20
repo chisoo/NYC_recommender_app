@@ -21,6 +21,8 @@ from bokeh_helper import setColumnDataSource
 from find_closest_bk_gp import find_closest_bk_gp
 from draw_example_maps import draw_bk_gp_family_hhld, draw_nta_family_hhld
 
+from urllib.parse import urljoin, quote
+
 app = Flask(__name__)
 
 data_path = 'Data/'
@@ -114,9 +116,15 @@ def recommendations():
 						.merge(zillow_df_w_geoid[['GEOID', 'Name', 'Boro']].copy())\
 						.sort_values('rank')
 
+	url_base = 'https://www.zillow.com/homes/for_rent/'
+	url_suffix = ',-NY_rb/'
+	closest_bk_gp_df['link'] = closest_bk_gp_df['Name'].apply(lambda x: 
+								urljoin(url_base, quote(x), url_suffix))
+	print('name and link: \n{}'.format(closest_bk_gp_df[['Name', 'link']].head()))
+
 	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
-	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'Boro']].set_index('GEOID').to_dict()
+	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'Boro', 'link']].set_index('GEOID').to_dict()
 
 	# read in zillow shape file for boundary
 	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 

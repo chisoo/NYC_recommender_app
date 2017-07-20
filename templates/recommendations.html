@@ -51,6 +51,7 @@
 				</center>
 
 				<h3>Details</h3>
+				Click the link in the "Neighborhood" column to see available listings. 
 				<center>
 					<table border = '1'> 
 						<tr> 
@@ -61,13 +62,16 @@
 						{%- set rank_vals = rank_dict['GEOID'] %}
 						{%- set zillow_vals = zillow_dict['Name'] %}
 						{%- set boro_vals = zillow_dict['Boro'] %}
+						{%- set link_vals = zillow_dict['link'] %}
 		
 						{% for k, v in rank_vals.items() %}
 							{%- set zillow_val = zillow_vals[v] %}
 							{%- set boro_val = boro_vals[v] %}
+							{%- set link_val = link_vals[v] %}
+
 							<tr> 
 								<td> {{ k }} </td> 
-								<td> {{ zillow_val }} </td>
+								<td> <a href = {{ link_val }}> {{ zillow_val }} </a> </td>
 								<td> {{ boro_val }} </td>
 							</tr>
 						{% endfor %}
