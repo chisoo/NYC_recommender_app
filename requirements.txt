@@ -1,12 +1,10 @@
 gunicorn==19.3.0
 bokeh==0.12.6
-Flask
+Flask==0.12.2
 geopandas==0.2.1
 Jinja2==2.9.6
 numpy==1.12.1
 pandas==0.20.2
-psycopg2==2.7.1
 scikit-learn==0.18.1
 scipy==0.19.0
-Shapely
-SQLAlchemy==1.1.5
+Shapely==1.5.17.post1
