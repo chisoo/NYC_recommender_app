@@ -7,4 +7,4 @@ numpy==1.12.1
 pandas==0.20.2
 scikit-learn==0.18.1
 scipy==0.19.0
-Shapely==1.5.17.post1
+Shapely
