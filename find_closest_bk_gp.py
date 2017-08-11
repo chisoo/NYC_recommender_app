@@ -3,9 +3,6 @@ import numpy as np
 import pandas as pd
 import pickle
 
-import geopandas as gpd
-from geopandas import GeoDataFrame
-
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import euclidean_distances
 

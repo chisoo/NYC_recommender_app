@@ -4,9 +4,6 @@ import pickle
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import euclidean_distances
 
-import geopandas as gpd
-from geopandas import GeoDataFrame
-
 import numpy as np
 import pandas as pd
 import os
@@ -17,7 +14,6 @@ from bokeh.models import ColumnDataSource, HoverTool, LogColorMapper
 from bokeh.embed import components
 from bokeh.resources import CDN
 
-from bokeh_helper import setColumnDataSource
 from find_closest_bk_gp import find_closest_bk_gp
 
 from urllib.parse import urljoin, quote
@@ -48,6 +44,11 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'num_food_venues': 'Number of food venues', 
 				'pct_A_sch_in_district': 'Percent of grade A schools in school district'}
 app.char_to_avoid_list = []
+
+def setColumnDataSource(df, col_list): 
+    g_df = df[col_list].copy()
+    g_source = ColumnDataSource(g_df)
+    return g_source
 
 @app.route('/')
 def index():
@@ -90,18 +91,18 @@ def recommendations():
 		val_list.append(0)
 
 	# read in the dataframe prepared for the graph
-	with open('{}bk_gp_df_for_graph'.format(data_path), 'rb') as file_obj: 
-		bk_gp_df_for_graph = pickle.load(file_obj)
+	with open('{}bk_gp_df_for_graph_latlon'.format(data_path), 'rb') as file_obj: 
+		bk_gp_df_for_graph_latlon = pickle.load(file_obj)
 
 	num_to_find = 5
 	closest_bk_gp_df = \
-		find_closest_bk_gp(bk_gp_df_for_graph, num_to_find, feature_list, val_list)
+		find_closest_bk_gp(bk_gp_df_for_graph_latlon, num_to_find, feature_list, val_list)
 
 	# merge in zillow neighborhood for each GEOID
-	with open('{}zillow_df_w_geoid'.format(data_path), 'rb') as file_obj: 
-		zillow_df_w_geoid = pickle.load(file_obj)
+	with open('{}zillow_latlon_df_w_geoid'.format(data_path), 'rb') as file_obj: 
+		zillow_latlon_df_w_geoid = pickle.load(file_obj)
 	closest_bk_gp_df = closest_bk_gp_df\
-						.merge(zillow_df_w_geoid[['GEOID', 'Name', 'Boro']].copy())\
+						.merge(zillow_latlon_df_w_geoid[['GEOID', 'Name', 'Boro']].copy())\
 						.sort_values('rank')
 
 	url_base = 'https://www.zillow.com/homes/for_rent/'
@@ -114,8 +115,8 @@ def recommendations():
 	zillow_dict = closest_bk_gp_df[['GEOID', 'Name', 'Boro', 'link']].set_index('GEOID').to_dict()
 
 	# read in zillow shape file for boundary
-	with open('{}zillow_shape_df'.format(data_path), 'rb') as file_obj: 
-		zillow_shape_df = pickle.load(file_obj)
+	with open('{}zillow_latlon_df'.format(data_path), 'rb') as file_obj: 
+		zillow_latlon_df = pickle.load(file_obj)
 
 	# setup the list for hover
 	hover_list = [("Rank", "@rank"), ("Neighborhood", "@Name")]
@@ -138,7 +139,7 @@ def recommendations():
 	# prepare column data source
 	bk_gp_df_vars = feature_list + ['rank', 'lon', 'lat', 'Name']
 	bk_gp_source = setColumnDataSource(closest_bk_gp_df, bk_gp_df_vars)
-	zillow_source = setColumnDataSource(zillow_shape_df, ['lon', 'lat', 'Name'])
+	zillow_source = setColumnDataSource(zillow_latlon_df, ['lon', 'lat', 'Name'])
 
 	picked_vals_kv = [['Group'] + feature_list, ['Desired'] + val_list]
 
