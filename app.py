@@ -19,7 +19,6 @@ from bokeh.resources import CDN
 
 from bokeh_helper import setColumnDataSource
 from find_closest_bk_gp import find_closest_bk_gp
-from draw_example_maps import draw_bk_gp_family_hhld, draw_nta_family_hhld
 
 from urllib.parse import urljoin, quote
 
@@ -46,7 +45,8 @@ app.var_dict = {'med_hhld_inc':'Median household income',
 				'med_gross_rent': 'Median gross rent', 
 				'med_num_rooms': 'Median number of rooms', 
 				'num_lines': 'Number of subway lines', 
-				'num_food_venues': 'Number of food venues'}
+				'num_food_venues': 'Number of food venues', 
+				'pct_A_sch_in_district': 'Percent of grade A schools in school district'}
 app.char_to_avoid_list = []
 
 @app.route('/')
@@ -67,7 +67,8 @@ def data_source():
 def picked_chars():
 	char_chosen_list = []
 	for char in ['med_hhld_inc', 'hhld_size_all', 'good_trees', 'med_gross_rent',
-			     'med_num_rooms', 'num_lines', 'num_food_venues']:
+			     'med_num_rooms', 'num_lines', 'num_food_venues', 
+			     'pct_A_sch_in_district']:
 		if request.form.get(char): 
 			char_chosen_list.append(char)
 	for char in ['noise_res', 'rodent', 'murder_manslaughter_homicide', 
@@ -77,19 +78,6 @@ def picked_chars():
 			app.char_to_avoid_list.append(char)
 	return render_template('picked_chars.html', char_chosen_list = char_chosen_list, 
 							var_dict = app.var_dict)
-
-# example plots for viz miniproject
-@app.route('/example_plot1')
-def example_plot1():
-	return render_template('family_hhld_bk_gp_plot.html')
-
-@app.route('/example_plot2')
-def example_plot2():
-	return render_template('family_hhld_nta_plot.html')
-
-@app.route('/example_plot3')
-def example_plot3():
-	return render_template('hist_example.html')
 
 @app.route('/recommendations', methods = ['POST'])
 def recommendations():
@@ -120,7 +108,6 @@ def recommendations():
 	url_suffix = ',-NY_rb/'
 	closest_bk_gp_df['link'] = closest_bk_gp_df['Name'].apply(lambda x: 
 								urljoin(url_base, quote(x), url_suffix))
-	print('name and link: \n{}'.format(closest_bk_gp_df[['Name', 'link']].head()))
 
 	# save rank and zillow neighborhood name as dictionary
 	rank_dict = closest_bk_gp_df[['rank', 'GEOID']].set_index('rank').to_dict()
@@ -139,7 +126,8 @@ def recommendations():
 				  'good_trees': 'number of healthy trees', 
 				  'num_lines': 'number of subway lines', 
 				  'num_venues': 'number of any venues', 
-				  'num_food_venues': 'number of food venues'}
+				  'num_food_venues': 'number of food venues', 
+				  'pct_A_sch_in_district': 'percent of grade A schools in school district'}
 
 	for item in feature_list:  
 		if item in hover_dict.keys():
